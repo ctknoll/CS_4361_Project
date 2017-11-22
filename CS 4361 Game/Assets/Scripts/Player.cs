@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
     public GameObject particles, magazine; // DeathEffect and Magazine pre-fabs
 
     bool isJumping = false, isReloading = false, isPlayerDead = false;
-    float moveSpeed = 1, jumpForce = 125, reloadSpeed = 3, nextShot = 0, gravity = 10, jumpSpeed = 6, 
+    float moveSpeed = 1, jumpForce = 125, reloadSpeed = 3, nextShot = 0, gravity = 12, jumpSpeed = 3, 
         verticalVelocity;
     GameObject gun;
     CharacterController controller;

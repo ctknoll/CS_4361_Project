@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 
 Project("{339EDB2C-61D8-0E10-E258-9DCED88922C3}") = "CS 4361 Game", "Assembly-CSharp.csproj", "{EA2B9CFE-D6D4-4F17-E728-D5260AB6ACB4}"
 EndProject
+Project("{339EDB2C-61D8-0E10-E258-9DCED88922C3}") = "CS 4361 Game", "Assembly-CSharp-Editor.csproj", "{C3906078-AC54-4551-AC5E-F27EF4446E0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{EA2B9CFE-D6D4-4F17-E728-D5260AB6ACB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA2B9CFE-D6D4-4F17-E728-D5260AB6ACB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA2B9CFE-D6D4-4F17-E728-D5260AB6ACB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3906078-AC54-4551-AC5E-F27EF4446E0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3906078-AC54-4551-AC5E-F27EF4446E0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3906078-AC54-4551-AC5E-F27EF4446E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3906078-AC54-4551-AC5E-F27EF4446E0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
