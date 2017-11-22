@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class UIUtils : MonoBehaviour
 {
     CanvasGroup pauseMenu = null;
-    private static bool isPaused;
+    public static bool isPaused;
 
     public static readonly string[] notInGame = {"Main Screen"};
 
@@ -13,7 +13,7 @@ public class UIUtils : MonoBehaviour
     {
         if (inGame())
         {
-            pauseMenu = GameObject.Find("UI").GetComponentInChildren<CanvasGroup>();
+            pauseMenu = GameObject.Find("UIController").GetComponentInChildren<CanvasGroup>();
             isPaused = false;
             SetPaused(isPaused);
         }
@@ -24,7 +24,7 @@ public class UIUtils : MonoBehaviour
     {
         if (!inGame())
             Cursor.lockState = CursorLockMode.None;
-        if (Input.GetButtonDown("Escape") && inGame())
+        if (Input.GetButtonDown("Cancel") && inGame())
         {
             SetPaused(!isPaused);
         }
@@ -43,6 +43,17 @@ public class UIUtils : MonoBehaviour
     {
         SetPaused(false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void LoadScene(string sceneName)
+    {
+        SetPaused(false);
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 
     public void SetPaused(bool pause)
