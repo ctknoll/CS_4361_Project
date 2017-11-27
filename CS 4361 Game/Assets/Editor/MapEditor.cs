@@ -8,8 +8,15 @@ using UnityEditor;
 public class MapEditor : Editor {
 	public override void OnInspectorGUI()
 	{
-		base.OnInspectorGUI();
-		MapGenerator map = target as MapGenerator;
-		map.CreateMap();
-	}
+        MapGenerator map = target as MapGenerator;
+        if (DrawDefaultInspector())
+        {
+            map.CreateMap();
+        }
+
+        if (GUILayout.Button("Generate Map"))
+        {
+            map.CreateMap();
+        }
+    }
 }
