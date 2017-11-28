@@ -58,7 +58,13 @@ public class Character : MonoBehaviour, IDamagable
             OnDeath();
         }
 
+        if (type == "Player")
+        {
+            UIUtils.playerDead = true;
+        }
+
         // display the gameover UI here, or however...
         Destroy(gameObject, 0.5f);
     }
+
 }

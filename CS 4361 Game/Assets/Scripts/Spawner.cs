@@ -8,7 +8,7 @@ public class Spawner : MonoBehaviour
     Player player;
     MapGenerator.Map map;
 
-    int numOfEnemies, maxOnMap = 25;
+    int numOfEnemies, maxOnMap = 5;
 
     void Start()
     {
@@ -23,17 +23,19 @@ public class Spawner : MonoBehaviour
     /// <returns></returns>
     IEnumerator Spawn()
     {
+        maxOnMap = 5 + player.enemyCount / 2;
         while (!player.isDead)
         {
+
             if (numOfEnemies < maxOnMap)
             {
                 numOfEnemies++;
                 Vector3 spawn = new Vector3(Random.Range(-map.sizeOfMap.x, map.sizeOfMap.x), 0.25f, Random.Range(-map.sizeOfMap.y, map.sizeOfMap.y));
-                Debug.Log("Adding enemy" + spawn);
+                //Debug.Log("Adding enemy" + spawn);
                 Instantiate(enemy, spawn, Quaternion.identity).OnDeath += OnEnemyDeath;
             }
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(2F);
         }
     }
 

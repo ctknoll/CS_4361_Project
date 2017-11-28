@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(CharacterController))]
 public class Player : Character
@@ -10,20 +11,30 @@ public class Player : Character
     const float rateOfFire = 0.25f; // rateOfFire is time in seconds, used as time between shots
 
     public Bullet bullet; // Bullet pre-fab
-    public GameObject magazine; // DeathEffect and Magazine pre-fabs
+    public GameObject magazine; // Magazine pre-fabs
 
-    bool isReloading = false;
-    float moveSpeed = 2, nextShot = 0, gravity = 12, jumpSpeed = 3, verticalVelocity;
     CharacterController controller;
     Camera cam;
     Rigidbody rb;
     AimStatus status;
     Animation anim;
     AnimationState animState;
+    public Slider healthMeter;
+    public Image healthFillImage;
+    public Slider staminaMeter;
+    public Image staminaMeterFillImage;
+    public Text ammoText;
 
     // player stat variables
     public int enemyCount;
+
+    bool isReloading = false;
     int ammo = 15;
+    float moveSpeed = 2, nextShot = 0, gravity = 12, jumpSpeed = 3, verticalVelocity;
+    float stamina = 1;
+    float staminaDrain = .25F;
+    float staminaRecovery = .1F;
+    bool exhausted, isSprinting;
 
     protected override void Start ()
     {
@@ -43,7 +54,9 @@ public class Player : Character
 
     void FixedUpdate()
     {
-        transform.rotation = Quaternion.Euler(cam.transform.rotation.eulerAngles.x, cam.transform.rotation.eulerAngles.y, cam.transform.rotation.eulerAngles.z);
+        staminaManagement();
+        //transform.rotation = Quaternion.Euler(cam.transform.rotation.eulerAngles.x, cam.transform.rotation.eulerAngles.y, cam.transform.rotation.eulerAngles.z);
+        ManageUI();
         JumpAndGravity();
         // Basic movement for the player
         // Only move if input from the axis are detected
@@ -60,7 +73,7 @@ public class Player : Character
             animState.speed = 1;
             anim.Play("ADS");
         }
-        else if (Input.GetMouseButtonUp(1) && status == AimStatus.AIM && !anim.IsPlaying("ADS"))
+        if (Input.GetMouseButtonUp(1) && status == AimStatus.AIM && !anim.IsPlaying("ADS"))
         {
             status = AimStatus.HIP;
             animState.speed = -1;
@@ -81,8 +94,8 @@ public class Player : Character
         if (Input.GetKeyDown(KeyCode.R) && ammo < maxAmmo && !isReloading)
         {
             isReloading = true;
-            Destroy(Instantiate(magazine, grip.position, grip.rotation), 5); // despawn magazine after five seconds
-            Invoke("ReloadWeapon", 3);
+            Destroy(Instantiate(magazine, grip.position, grip.rotation), 5);
+            Invoke("ReloadWeapon", 1);
             Debug.Log("Reloading...");
         }
 
@@ -92,6 +105,12 @@ public class Player : Character
         // kill the player if they fell off of the map
         if (transform.position.y < -10)
             TakeDamage(1000);
+
+        if(health < startingHealth)
+        {
+            health += 2.5F * Time.deltaTime;
+            health = health > startingHealth ? startingHealth : health;  
+        }
     }
 
     /// <summary>
@@ -99,12 +118,14 @@ public class Player : Character
     /// </summary>
     void Move()
     {
+        isSprinting = Input.GetButton("Fire3") && !exhausted ? true : false;
         // reduce movement speed of the player if they are aiming down sight
         if (status == AimStatus.AIM)
             moveSpeed = 1;
         else
             moveSpeed = 2;
-
+        moveSpeed = isSprinting ? 2.5F * moveSpeed : moveSpeed;
+        moveSpeed = exhausted ? .5F * moveSpeed : moveSpeed;
         Vector3 moveInput, moveVelocity;
         moveInput = Input.GetAxisRaw("Horizontal") * transform.right + Input.GetAxisRaw("Vertical") * transform.forward;
         moveVelocity = moveInput.normalized * moveSpeed;
@@ -159,19 +180,48 @@ public class Player : Character
         Debug.Log("Ammo: " + ammo + "/" + maxAmmo);
     }
 
+    void ManageUI()
+    {
+        healthMeter.value = health/startingHealth;
+        healthFillImage.color = Color.Lerp(Color.red, Color.green, healthMeter.value);
+        ammoText.text = "Ammo: " + ammo + " / " + maxAmmo + "\nEnemies Killed: " + enemyCount;
+    }
+
     /// <summary>
     /// Have the player look at where the mouse cursor currently is on the map.
     /// </summary>
     void LookAtPoint()
     {
-        float distance;
+        float distance = 10;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        Plane ground = new Plane(Vector3.up, Vector3.zero);
+        Debug.DrawRay(ray.origin, ray.direction);
+        Plane ground = new Plane(Vector3.up, Vector3.zero);  
+        Vector3 point = ray.GetPoint(distance);
+        transform.LookAt(Vector3.ProjectOnPlane(point, Vector3.up));
+    }
 
-        if (ground.Raycast(ray, out distance))
+    void staminaManagement()
+    {
+        if (isSprinting)
         {
-            Vector3 point = ray.GetPoint(distance);
-            transform.LookAt(new Vector3(point.x, transform.position.y, point.z));
+            if (stamina > 0) stamina -= staminaDrain * Time.deltaTime;
+            if (stamina <= 0)
+            {
+                stamina = 0;
+                exhausted = true;
+            }
         }
+        else if (stamina < 1)
+        {
+            stamina += staminaRecovery * Time.deltaTime;
+            if (stamina >= 1)
+            {
+                stamina = 1;
+                exhausted = false;
+            }
+        }
+
+        staminaMeter.value = stamina;
+        staminaMeterFillImage.color = Color.Lerp(Color.red, Color.green, staminaMeter.value);
     }
 }
